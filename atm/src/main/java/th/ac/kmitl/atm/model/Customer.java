@@ -1,15 +1,23 @@
 package th.ac.kmitl.atm.model;
 
-public class Customer {
-        private int id;
-        private String name;
-        private String pin;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-        public Customer(int id, String name, String pin) {
-            this.id = id;
-            this.name = name;
-            this.pin = pin;
-        }
+@Entity
+public class Customer {
+
+    @Id
+    private int id;
+    private String name;
+    private String pin;
+
+    public Customer() {}
+
+    public Customer(int id, String name, String pin) {
+        this.id = id;
+        this.name = name;
+        this.pin = pin;
+    }
 
         public int getId() {
             return id;

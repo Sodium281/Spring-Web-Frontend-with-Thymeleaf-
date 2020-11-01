@@ -3,28 +3,31 @@ package th.ac.kmitl.atm.service;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import th.ac.kmitl.atm.model.Customer;
+import th.ac.kmitl.atm.model.CustomerRepository;
+
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 
 public class CustomerService {
-    private ArrayList<Customer> customerList;
+    private CustomerRepository repository;
 
-    @PostConstruct
-    public void postConstruct() {
-        customerList = new ArrayList<>();
+    public CustomerService(CustomerRepository repository) {
+        this.repository = repository;
     }
 
     public void createCustomer(Customer customer) {
         String hashPin = hash(customer.getPin());
         customer.setPin(hashPin);
-        customerList.add(customer);
+        repository.save(customer);
     }
 
     public List<Customer> getCustomers() {
-        return new ArrayList<>(this.customerList);
+
+        return repository.findAll();
     }
     private String hash(String pin) {
         String salt = BCrypt.gensalt(12);
@@ -33,11 +36,12 @@ public class CustomerService {
 
 
     public Customer findCustomer(int id) {
-        for (Customer customer : customerList) {
-            if (customer.getId() == id)
-                return customer;
+        try {
+            return repository.findById(id).get();
+        } catch (NoSuchElementException e) {
+            return null;
         }
-        return null;
+
     }
     public Customer checkPin(Customer inputCustomer) {
         // 1. หา customer ที่มี id ตรงกับพารามิเตอร์
